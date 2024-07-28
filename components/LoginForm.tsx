@@ -1,14 +1,33 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    // Handle login logic here
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setMessage("Login successful");
+      router.push("/");
+    } else {
+      setMessage(data.message);
+    }
   };
 
   return (
@@ -48,6 +67,7 @@ export default function LoginForm() {
         >
           Login
         </button>
+        {message && <p className="mt-4 text-red-500">{message}</p>}
       </div>
     </form>
   );
