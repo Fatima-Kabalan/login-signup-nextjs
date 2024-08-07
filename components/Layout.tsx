@@ -1,7 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import Menu from "@/public/icons/menu";
 import React, { ReactNode, useState } from "react";
+import MenuItem from "./MenuItem";
+import LogoutButton from "./LogoutButton";
 
 type LayoutProps = {
   children: ReactNode;
@@ -9,14 +11,10 @@ type LayoutProps = {
 
 export default function Layout({ children }: LayoutProps) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Function to handle logout
   const handleLogout = () => {
-    // Clear JWT token from local storage or cookies
     localStorage.removeItem("authToken"); // Assuming JWT is stored in local storage
-    const myToken = localStorage.getItem("authToken");
-    console.log("Token logout", myToken);
-    // Redirect to home page after logout
     window.location.href = "/";
   };
 
@@ -28,27 +26,39 @@ export default function Layout({ children }: LayoutProps) {
     setShowLogoutModal(false);
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-gray-800 text-white p-4">
-        <nav className="container mx-auto">
-          <ul className="flex gap-10 justify-center text-xl font-bold">
-            <Link href="/" className="hover:underline">
-              Home
-            </Link>
-            <Link href="/login" className="hover:underline">
-              Login
-            </Link>
-            <Link href="/signup" className="hover:underline">
-              SignUp
-            </Link>
-
-            <button
-              onClick={handleLogoutClick}
-              className="hover:underline text-white bg-transparent border-none cursor-pointer"
-            >
-              Logout
+      <header className="bg-gray-800 text-white p-4 relative">
+        <nav className="container mx-auto flex justify-between items-center p-2">
+          <div className="text-2xl font-bold">Brand</div>
+          <div className="md:hidden relative">
+            <button className="text-white h-8" onClick={toggleMenu}>
+              <Menu />
             </button>
+            {isMenuOpen && (
+              <ul className="absolute top-full -left-9 mt-2 bg-gray-800 rounded shadow-lg z-10 w-48">
+                <MenuItem href="/" onClick={toggleMenu}>
+                  Home
+                </MenuItem>
+                <MenuItem href="/login" onClick={toggleMenu}>
+                  Login
+                </MenuItem>
+                <MenuItem href="/signup" onClick={toggleMenu}>
+                  SignUp
+                </MenuItem>
+                <LogoutButton onClick={handleLogoutClick} />
+              </ul>
+            )}
+          </div>
+          <ul className="hidden md:flex flex-row gap-4 md:gap-10 justify-center text-lg md:text-xl font-bold">
+            <MenuItem href="/">Home</MenuItem>
+            <MenuItem href="/login">Login</MenuItem>
+            <MenuItem href="/signup">SignUp</MenuItem>
+            <LogoutButton onClick={handleLogoutClick} />
           </ul>
         </nav>
       </header>
