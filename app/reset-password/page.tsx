@@ -1,22 +1,32 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Get the token from local storage
+    const storedToken = localStorage.getItem("reset-token");
+    setToken(storedToken);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const token = searchParams.get("token"); // Get the token from the URL
+    if (!token) {
+      setMessage("No token found. Please try again.");
+      return;
+    }
 
     if (password !== confirmPassword) {
-      return setMessage("Passwords do not match");
+      setMessage("Passwords do not match");
+      return;
     }
 
     const res = await fetch("/api/auth/reset-password", {
@@ -31,6 +41,7 @@ export default function ResetPassword() {
 
     if (res.ok) {
       setMessage("Password reset successful");
+      localStorage.removeItem("reset-token"); // Clear token after successful reset
       router.push("/login"); // Redirect to login page
     } else {
       setMessage(data.message);
