@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -84,6 +85,14 @@ export default function LoginForm() {
         >
           Login
         </button>
+        <p className="text-center mt-4">
+          <Link
+            href="/forgot-password"
+            className="text-blue-500 hover:text-blue-700"
+          >
+            Forgot Password?
+          </Link>
+        </p>
       </form>
     </div>
   );
