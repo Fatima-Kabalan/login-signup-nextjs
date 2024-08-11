@@ -1,7 +1,7 @@
 "use client";
 
 import Menu from "@/public/icons/menu";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import MenuItem from "./MenuItem";
 import LogoutButton from "./LogoutButton";
 
@@ -12,9 +12,10 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLUListElement>(null);
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken"); // Assuming JWT is stored in local storage
+    localStorage.removeItem("authToken");
     window.location.href = "/";
   };
 
@@ -30,6 +31,19 @@ export default function Layout({ children }: LayoutProps) {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      setIsMenuOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-gray-800 text-white p-4 relative">
@@ -40,7 +54,10 @@ export default function Layout({ children }: LayoutProps) {
               <Menu />
             </button>
             {isMenuOpen && (
-              <ul className="absolute top-full -left-9 mt-2 bg-gray-800 rounded shadow-lg z-10 w-48">
+              <ul
+                ref={menuRef}
+                className="absolute top-full -left-9 mt-2 bg-gray-800 rounded shadow-lg z-10 w-48"
+              >
                 <MenuItem href="/" onClick={toggleMenu}>
                   Home
                 </MenuItem>
