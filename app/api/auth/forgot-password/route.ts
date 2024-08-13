@@ -5,7 +5,7 @@ import { sendEmail } from '@/util/sendEmail';
 import User from '@/models/User';
 import connectMongodb from '@/util/dbconnection';
 
-const JWT_SECRET =`${process.env.JWT_SECRET}` as string;
+const JWT_SECRET = `${process.env.JWT_SECRET}` as string;
 
 export async function POST(request: Request) {
   await connectMongodb();
@@ -20,9 +20,11 @@ export async function POST(request: Request) {
 
     // Generate token
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    console.log("token", token);
 
     // Send reset email
     const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password?token=${token}`;
+    console.log("url", resetUrl);
     await sendEmail({
       to: email,
       subject: 'Password Reset Request',
