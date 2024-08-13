@@ -11,9 +11,17 @@ export default function ResetPassword() {
   const router = useRouter();
 
   useEffect(() => {
-    // Get the token from local storage
-    const storedToken = localStorage.getItem("reset-token");
-    setToken(storedToken);
+    // Extract token from the URL query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get("token");
+
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
+      // Optionally store token in localStorage if needed
+      localStorage.setItem("reset-token", tokenFromUrl);
+    } else {
+      setMessage("No token found in the URL. Please try again.");
+    }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,22 +37,27 @@ export default function ResetPassword() {
       return;
     }
 
-    const res = await fetch("/api/auth/reset-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ password, token }),
-    });
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password, token }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      setMessage("Password reset successful");
-      localStorage.removeItem("reset-token"); // Clear token after successful reset
-      router.push("/login"); // Redirect to login page
-    } else {
-      setMessage(data.message);
+      if (res.ok) {
+        setMessage("Password reset successful");
+        localStorage.removeItem("reset-token"); // Clear token after successful reset
+        router.push("/login"); // Redirect to login page
+      } else {
+        setMessage(data.message);
+      }
+    } catch (error) {
+      console.error("Error during password reset:", error);
+      setMessage("An error occurred. Please try again.");
     }
   };
 
