@@ -1,12 +1,15 @@
 "use client";
+import Spinner from "@/public/icons/spinner";
 import { useState } from "react";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await fetch("/api/auth/forgot-password", {
@@ -19,6 +22,7 @@ export default function ForgotPassword() {
 
       // Make sure the response is read only once
       const data = await res.json();
+      setLoading(false);
 
       if (res.ok) {
         setMessage("Password reset link sent to your email");
@@ -26,6 +30,7 @@ export default function ForgotPassword() {
         setMessage(data.message || "Something went wrong");
       }
     } catch (error) {
+      setLoading(false);
       console.error("Error during password reset:", error);
       setMessage("An error occurred. Please try again.");
     }
@@ -54,8 +59,16 @@ export default function ForgotPassword() {
         <button
           type="submit"
           className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none"
+          disabled={loading} // Disable the button while loading
         >
-          Send Reset Link
+          {loading ? (
+            <div className="flex justify-center items-center">
+              <Spinner />
+              Sending...
+            </div>
+          ) : (
+            "Send Reset Link"
+          )}
         </button>
       </form>
     </div>
