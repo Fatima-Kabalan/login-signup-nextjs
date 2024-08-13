@@ -62,8 +62,10 @@ export default function ForgotPassword() {
           disabled={loading} // Disable the button while loading
         >
           {loading ? (
-            <div className="flex justify-center items-center">
-              <Spinner />
+            <div className="flex justify-center items-center gap-4">
+              <div className=" h-5">
+                <Spinner />
+              </div>
               Sending...
             </div>
           ) : (
