@@ -1,5 +1,6 @@
 "use client";
 
+import Spinner from "@/public/icons/spinner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -9,34 +10,43 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password, username }),
-    });
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, username }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
+      setLoading(false);
 
-    if (res.ok) {
-      setMessage("Login successful");
-      localStorage.setItem("authToken", data.token); // Store token in localStorage
-      router.push("/protected"); // Redirect to protected page
-    } else {
-      setMessage(data.message);
+      if (res.ok) {
+        setMessage("Login successful");
+        localStorage.setItem("authToken", data.token); // Store token in localStorage
+        router.push("/protected"); // Redirect to protected page
+      } else {
+        setMessage(data.message);
+      }
+    } catch (error) {
+      setLoading(false);
+      setMessage("An error occurred during login.");
+      console.error("Login error:", error);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleFormSubmit}
         className="max-w-md w-full bg-white shadow-lg rounded-lg p-8"
       >
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
@@ -82,9 +92,20 @@ export default function LoginForm() {
         <button
           type="submit"
           className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          disabled={loading}
         >
-          Login
+          {loading ? (
+            <div className="flex justify-center items-center gap-4">
+              <div className=" h-5">
+                <Spinner />
+              </div>
+              Logging in...
+            </div>
+          ) : (
+            "Login"
+          )}
         </button>
+
         <p className="text-center mt-4">
           <Link
             href="/forgot-password"

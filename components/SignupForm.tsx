@@ -2,16 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Spinner from "@/public/icons/spinner";
 
 export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const res = await fetch("/api/auth/register", {
       method: "POST",
@@ -22,6 +25,7 @@ export default function SignupForm() {
     });
 
     const data = await res.json();
+    setLoading(false);
 
     if (res.ok) {
       setMessage("Registration successful");
@@ -80,8 +84,18 @@ export default function SignupForm() {
         <button
           type="submit"
           className="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          disabled={loading}
         >
-          Sign Up
+          {loading ? (
+            <div className="flex justify-center items-center gap-4">
+              <div className=" h-5">
+                <Spinner />
+              </div>
+              Signing up...
+            </div>
+          ) : (
+            "Sign up"
+          )}
         </button>
       </form>
     </div>
