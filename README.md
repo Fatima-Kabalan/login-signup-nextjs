@@ -1,9 +1,8 @@
-<a href="https://github.com/Fatima-Kabalan/login-signup-nextjs">
-    <h1>Simple Login Signup Form using Next.js 14, JWT, MongoDB, Typescript</h1>
-</a>
+
+    <h1>Simple Form using Next.js 14, JWT, MongoDB, Typescript</h1>
+
 <br/>
-<h2>A demo project that uses Next.js JWT for authentication, connects to MongoDB with Mongoose, and supports email/password login.</h2>
-<br/>
+<p>A demo project that uses Next.js JWT for authentication, connects to MongoDB with Mongoose, and supports email/password login.</p>
 <h1>Features</h1>
 <ul>
 <li>Credential Login: Log in with email and password.</li>
