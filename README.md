@@ -11,6 +11,7 @@
 <h1>Environment Setup</h1>
 <br/>
 <p>Create a .env file in the root directory and add the following variables:</p>
+
     NEXT_PUBLIC_BASE_URL="http://192.168.1.114:3000"
 
     AUTH_SECRET="YOUR_AUTH_SECRET"
@@ -26,13 +27,15 @@
 <h1>Getting Started</h1>
 </br>
 <p>First, run the development server:</p>
-    npm run dev
-    # or
-    yarn dev
-    # or
-    pnpm dev
-    # or
-    bun dev
+
+        npm run dev
+        # or
+        yarn dev
+        # or
+        pnpm dev
+        # or
+        bun dev
+
 <p>Open http://localhost:3000 with your browser to see the result.
 
 You can start editing the page by modifying app/page.tsx. The page auto-updates as you edit the file.
